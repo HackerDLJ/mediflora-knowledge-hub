@@ -139,6 +139,7 @@ const Home = () => {
         <div className="container px-4 text-center">
           <p className="text-muted-foreground">
             © 2024 MediFlora - Medicinal Plant App | Created by Team "Out of Ideas"
+            TeamMates: Luke Jebasundar D (DLJ), Madhavivanesh R, Maharaja G
           </p>
         </div>
       </footer>
