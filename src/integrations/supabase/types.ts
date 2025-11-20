@@ -14,7 +14,102 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      plants: {
+        Row: {
+          active_compounds: string[] | null
+          botanical_family: string | null
+          category: string[] | null
+          common_names: string[] | null
+          contraindications: string[] | null
+          created_at: string | null
+          cultivation_details: string | null
+          description: string
+          dosage: string | null
+          health_benefits: string[] | null
+          id: string
+          image_url: string | null
+          images: string[] | null
+          interactions: string[] | null
+          medicinal_properties: string[] | null
+          name: string
+          precautions: string[] | null
+          quality_score: number | null
+          regions: string[] | null
+          related_plant_ids: string[] | null
+          research_links: string[] | null
+          scientific_name: string
+          scientific_references: string[] | null
+          scientific_uses: string[] | null
+          side_effects: string[] | null
+          tags: string[] | null
+          traditional_uses: string[] | null
+          updated_at: string | null
+          verified: boolean | null
+        }
+        Insert: {
+          active_compounds?: string[] | null
+          botanical_family?: string | null
+          category?: string[] | null
+          common_names?: string[] | null
+          contraindications?: string[] | null
+          created_at?: string | null
+          cultivation_details?: string | null
+          description: string
+          dosage?: string | null
+          health_benefits?: string[] | null
+          id?: string
+          image_url?: string | null
+          images?: string[] | null
+          interactions?: string[] | null
+          medicinal_properties?: string[] | null
+          name: string
+          precautions?: string[] | null
+          quality_score?: number | null
+          regions?: string[] | null
+          related_plant_ids?: string[] | null
+          research_links?: string[] | null
+          scientific_name: string
+          scientific_references?: string[] | null
+          scientific_uses?: string[] | null
+          side_effects?: string[] | null
+          tags?: string[] | null
+          traditional_uses?: string[] | null
+          updated_at?: string | null
+          verified?: boolean | null
+        }
+        Update: {
+          active_compounds?: string[] | null
+          botanical_family?: string | null
+          category?: string[] | null
+          common_names?: string[] | null
+          contraindications?: string[] | null
+          created_at?: string | null
+          cultivation_details?: string | null
+          description?: string
+          dosage?: string | null
+          health_benefits?: string[] | null
+          id?: string
+          image_url?: string | null
+          images?: string[] | null
+          interactions?: string[] | null
+          medicinal_properties?: string[] | null
+          name?: string
+          precautions?: string[] | null
+          quality_score?: number | null
+          regions?: string[] | null
+          related_plant_ids?: string[] | null
+          research_links?: string[] | null
+          scientific_name?: string
+          scientific_references?: string[] | null
+          scientific_uses?: string[] | null
+          side_effects?: string[] | null
+          tags?: string[] | null
+          traditional_uses?: string[] | null
+          updated_at?: string | null
+          verified?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
