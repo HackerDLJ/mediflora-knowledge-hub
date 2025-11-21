@@ -2,12 +2,13 @@ import { useState, useRef, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Camera, Upload, Loader2, X } from "lucide-react";
+import { Camera, Upload, Loader2, X, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { DatabasePlant } from "@/types/plant";
 import { PlantCard } from "@/components/PlantCard";
 import { pipeline, env } from '@huggingface/transformers';
+import { preprocessImage } from "@/utils/imageProcessing";
 
 // Configure transformers.js
 env.allowLocalModels = false;
@@ -59,7 +60,7 @@ const Scanner = () => {
     setIsCameraActive(false);
   };
 
-  const captureImage = () => {
+  const captureImage = async () => {
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
@@ -69,22 +70,40 @@ const Scanner = () => {
       
       if (ctx) {
         ctx.drawImage(video, 0, 0);
-        const imageData = canvas.toDataURL('image/jpeg');
+        const imageData = canvas.toDataURL('image/jpeg', 0.95);
         setCapturedImage(imageData);
         stopCamera();
-        identifyPlant(imageData);
+        
+        // Apply image preprocessing
+        try {
+          const processedImage = await preprocessImage(imageData);
+          identifyPlant(processedImage);
+        } catch (error) {
+          console.error("Image preprocessing failed:", error);
+          // Fallback to original image
+          identifyPlant(imageData);
+        }
       }
     }
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         const imageData = e.target?.result as string;
         setCapturedImage(imageData);
-        identifyPlant(imageData);
+        
+        // Apply image preprocessing
+        try {
+          const processedImage = await preprocessImage(imageData);
+          identifyPlant(processedImage);
+        } catch (error) {
+          console.error("Image preprocessing failed:", error);
+          // Fallback to original image
+          identifyPlant(imageData);
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -169,17 +188,20 @@ const Scanner = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <div className="container px-4 py-12">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-4">Plant Scanner</h1>
-          <p className="text-lg text-muted-foreground">
-            Use your camera or upload an image to identify medicinal plants
+      <div className="container px-4 py-8 sm:py-12 max-w-7xl mx-auto">
+        <div className="mb-8 sm:mb-12 text-center">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Sparkles className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">AI Plant Scanner</h1>
+          </div>
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+            Advanced image processing with AI-powered identification for medicinal plants
           </p>
         </div>
 
         {/* Camera/Upload Section */}
         {!capturedImage && (
-          <Card className="p-8 mb-8">
+          <Card className="p-6 sm:p-8 mb-8 shadow-lg">
             <div className="flex flex-col items-center gap-6">
               {isCameraActive ? (
                 <div className="relative w-full max-w-2xl">
@@ -203,21 +225,27 @@ const Scanner = () => {
                 </div>
               ) : (
                 <>
-                  <div className="text-center space-y-4">
-                    <Camera className="h-24 w-24 text-muted-foreground mx-auto" />
-                    <p className="text-muted-foreground">
-                      Start your camera or upload an image to begin
-                    </p>
+                  <div className="text-center space-y-4 py-8">
+                    <div className="relative inline-block">
+                      <Camera className="h-20 w-20 sm:h-24 sm:w-24 text-muted-foreground mx-auto" />
+                      <Sparkles className="h-6 w-6 text-primary absolute -top-2 -right-2 animate-pulse" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-foreground mb-2">Ready to Identify</h3>
+                      <p className="text-muted-foreground text-sm sm:text-base">
+                        Capture or upload a clear image for best results
+                      </p>
+                    </div>
                   </div>
                   
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <Button onClick={startCamera} size="lg">
+                  <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                    <Button onClick={startCamera} size="lg" className="w-full sm:w-auto">
                       <Camera className="mr-2 h-5 w-5" />
                       Open Camera
                     </Button>
                     
-                    <label>
-                      <Button variant="outline" size="lg" asChild>
+                    <label className="w-full sm:w-auto">
+                      <Button variant="outline" size="lg" asChild className="w-full">
                         <span>
                           <Upload className="mr-2 h-5 w-5" />
                           Upload Image
@@ -240,7 +268,7 @@ const Scanner = () => {
         {/* Captured Image & Results */}
         {capturedImage && (
           <div className="space-y-8">
-            <Card className="p-6">
+            <Card className="p-4 sm:p-6 shadow-lg">
               <div className="flex flex-col md:flex-row gap-6">
                 <div className="md:w-1/2">
                   <img
