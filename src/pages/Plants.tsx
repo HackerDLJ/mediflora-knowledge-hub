@@ -1,24 +1,65 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { PlantCard } from "@/components/PlantCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { plantsData, categories } from "@/data/plantsData";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { DatabasePlant } from "@/types/plant";
+import { useToast } from "@/hooks/use-toast";
 
 const Plants = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Plants");
+  const [plants, setPlants] = useState<DatabasePlant[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [categories, setCategories] = useState<string[]>(["All Plants"]);
+  const { toast } = useToast();
 
-  const filteredPlants = plantsData.filter((plant) => {
+  useEffect(() => {
+    fetchPlants();
+  }, []);
+
+  const fetchPlants = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from("plants")
+        .select("*")
+        .order("name");
+
+      if (error) throw error;
+
+      setPlants(data || []);
+      
+      // Extract unique categories from all plants
+      const allCategories = new Set<string>(["All Plants"]);
+      data?.forEach(plant => {
+        plant.category?.forEach(cat => allCategories.add(cat));
+      });
+      setCategories(Array.from(allCategories));
+      
+    } catch (error) {
+      console.error("Error fetching plants:", error);
+      toast({
+        title: "Error loading plants",
+        description: "Failed to load plant database. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const filteredPlants = plants.filter((plant) => {
     const matchesSearch = 
       plant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      plant.scientificName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      plant.scientific_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       plant.description.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesCategory = 
       selectedCategory === "All Plants" || 
-      plant.category.includes(selectedCategory);
+      plant.category?.includes(selectedCategory);
 
     return matchesSearch && matchesCategory;
   });
@@ -71,7 +112,11 @@ const Plants = () => {
         </div>
 
         {/* Plant Grid */}
-        {filteredPlants.length > 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : filteredPlants.length > 0 ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredPlants.map((plant) => (
               <PlantCard key={plant.id} plant={plant} />

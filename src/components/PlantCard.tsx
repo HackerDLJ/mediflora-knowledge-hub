@@ -1,25 +1,10 @@
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plant } from "@/data/plantsData";
-import aloeVera from "@/assets/plants/aloe-vera.jpg";
-import turmeric from "@/assets/plants/turmeric.jpg";
-import lavender from "@/assets/plants/lavender.jpg";
-import ginger from "@/assets/plants/ginger.jpg";
-import peppermint from "@/assets/plants/peppermint.jpg";
-import chamomile from "@/assets/plants/chamomile.jpg";
-
-const imageMap: Record<string, string> = {
-  "aloe-vera": aloeVera,
-  "turmeric": turmeric,
-  "lavender": lavender,
-  "ginger": ginger,
-  "peppermint": peppermint,
-  "chamomile": chamomile,
-};
+import { DatabasePlant, getPlantImage } from "@/types/plant";
 
 interface PlantCardProps {
-  plant: Plant;
+  plant: DatabasePlant;
 }
 
 export const PlantCard = ({ plant }: PlantCardProps) => {
@@ -28,7 +13,7 @@ export const PlantCard = ({ plant }: PlantCardProps) => {
       <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 h-full">
         <div className="aspect-square overflow-hidden bg-muted">
           <img 
-            src={imageMap[plant.image]} 
+            src={getPlantImage(plant)} 
             alt={plant.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
@@ -38,12 +23,12 @@ export const PlantCard = ({ plant }: PlantCardProps) => {
             {plant.name}
           </CardTitle>
           <CardDescription className="italic text-sm">
-            {plant.scientificName}
+            {plant.scientific_name}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2 mb-3">
-            {plant.category.slice(0, 2).map((cat) => (
+            {plant.category?.slice(0, 2).map((cat) => (
               <Badge key={cat} variant="secondary" className="text-xs">
                 {cat}
               </Badge>
