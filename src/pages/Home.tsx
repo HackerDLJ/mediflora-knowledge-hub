@@ -4,20 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Navbar } from "@/components/Navbar";
 import { Search, BookOpen, Globe, Leaf } from "lucide-react";
 import heroBanner from "@/assets/hero-banner.jpg";
-
 const Home = () => {
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Navbar />
       
       {/* Hero Section */}
       <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img 
-            src={heroBanner} 
-            alt="Medicinal plants garden" 
-            className="w-full h-full object-cover"
-          />
+          <img src={heroBanner} alt="Medicinal plants garden" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-background/50" />
         </div>
         
@@ -137,14 +131,16 @@ const Home = () => {
       {/* Footer */}
       <footer className="bg-muted py-8 border-t">
         <div className="container px-4 text-center">
-          <p className="text-muted-foreground">
-            © 2024 MediFlora - Medicinal Plant App | Created by Team "Out of Ideas"
-            TeamMates: Luke Jebasundar D (DLJ), Madhavivanesh R, Maharaja G
+          <p className="text-muted-foreground text-center font-sans text-sm font-medium">
+            © 2024 MediFlora - Medicinal Plant App | Created by Team &quot;Out of Ideas&quot;
+
+ 
+
+ 
+    
           </p>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Home;
