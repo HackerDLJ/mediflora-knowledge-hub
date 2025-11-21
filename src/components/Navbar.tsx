@@ -19,11 +19,14 @@ export const Navbar = () => {
             <Link to="/plants" className="text-foreground hover:text-primary transition-colors">
               Browse Plants
             </Link>
+            <Link to="/scanner" className="text-foreground hover:text-primary transition-colors">
+              Scanner
+            </Link>
             <Link to="/about" className="text-foreground hover:text-primary transition-colors">
               About
             </Link>
             <Button variant="outline" asChild>
-              <Link to="/plants">Explore Database</Link>
+              <Link to="/scanner">Scan Plant</Link>
             </Button>
           </div>
         </div>
