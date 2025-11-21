@@ -131,8 +131,8 @@ const Home = () => {
       {/* Footer */}
       <footer className="bg-muted py-8 border-t">
         <div className="container px-4 text-center">
-          <p className="text-muted-foreground text-center font-sans text-sm font-medium">
-            © 2024 MediFlora - Medicinal Plant App | Created by Team &quot;Out of Ideas&quot;
+          <p className="text-muted-foreground text-center text-sm font-medium font-sans">
+            © 2025 MediFlora - Medicinal Plant App | Created by Team &quot;Out of Ideas&quot;                    TeamMates: Luke Jebasundar D (DLJ), Madhavivanesh R, Maharaja G 
 
  
 
