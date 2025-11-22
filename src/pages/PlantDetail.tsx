@@ -35,7 +35,9 @@ const PlantDetail = () => {
       setPlant(data);
       
     } catch (error) {
-      console.error("Error fetching plant:", error);
+      if (import.meta.env.DEV) {
+        console.error("Error fetching plant:", error);
+      }
       toast({
         title: "Error loading plant",
         description: "Failed to load plant details. Please try again.",

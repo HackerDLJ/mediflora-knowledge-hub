@@ -40,7 +40,9 @@ const Plants = () => {
       setCategories(Array.from(allCategories));
       
     } catch (error) {
-      console.error("Error fetching plants:", error);
+      if (import.meta.env.DEV) {
+        console.error("Error fetching plants:", error);
+      }
       toast({
         title: "Error loading plants",
         description: "Failed to load plant database. Please try again.",
