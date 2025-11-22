@@ -1,6 +1,8 @@
 import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
+import { DisclaimerBanner } from "@/components/DisclaimerBanner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -52,6 +54,7 @@ const PlantDetail = () => {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
+        <MedicalDisclaimer />
         <div className="container px-4 py-12 flex justify-center items-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
@@ -63,6 +66,7 @@ const PlantDetail = () => {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
+        <MedicalDisclaimer />
         <div className="container px-4 py-12 text-center">
           <h1 className="text-3xl font-bold mb-4">Plant Not Found</h1>
           <p className="text-muted-foreground mb-6">
@@ -82,8 +86,10 @@ const PlantDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
+      <MedicalDisclaimer />
       
       <div className="container px-4 py-8">
+        <DisclaimerBanner />
         <Button variant="ghost" asChild className="mb-6">
           <Link to="/plants">
             <ArrowLeft className="mr-2 h-4 w-4" />

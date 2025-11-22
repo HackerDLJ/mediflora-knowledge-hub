@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
+import { DisclaimerBanner } from "@/components/DisclaimerBanner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Camera, Upload, Loader2, X, Sparkles } from "lucide-react";
@@ -229,8 +231,11 @@ const Scanner = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
+      <MedicalDisclaimer />
       
       <div className="container px-4 py-8 sm:py-12 max-w-7xl mx-auto">
+        <DisclaimerBanner />
+        
         <div className="mb-8 sm:mb-12 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Sparkles className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
