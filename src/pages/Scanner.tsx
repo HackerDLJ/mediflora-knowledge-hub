@@ -14,12 +14,16 @@ import { preprocessImage } from "@/utils/imageProcessing";
 env.allowLocalModels = false;
 env.useBrowserCache = true;
 
+// Rate limiting constant
+const SCAN_COOLDOWN_MS = 3000; // 3 seconds between scans
+
 const Scanner = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [results, setResults] = useState<DatabasePlant[]>([]);
   const [confidence, setConfidence] = useState<number>(0);
+  const [lastScanTime, setLastScanTime] = useState<number>(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -43,7 +47,9 @@ const Scanner = () => {
         setIsCameraActive(true);
       }
     } catch (error) {
-      console.error("Camera error:", error);
+      if (import.meta.env.DEV) {
+        console.error("Camera error:", error);
+      }
       toast({
         title: "Camera Access Denied",
         description: "Please allow camera access to scan plants.",
@@ -79,7 +85,9 @@ const Scanner = () => {
           const processedImage = await preprocessImage(imageData);
           identifyPlant(processedImage);
         } catch (error) {
-          console.error("Image preprocessing failed:", error);
+          if (import.meta.env.DEV) {
+            console.error("Image preprocessing failed:", error);
+          }
           // Fallback to original image
           identifyPlant(imageData);
         }
@@ -100,7 +108,9 @@ const Scanner = () => {
           const processedImage = await preprocessImage(imageData);
           identifyPlant(processedImage);
         } catch (error) {
-          console.error("Image preprocessing failed:", error);
+          if (import.meta.env.DEV) {
+            console.error("Image preprocessing failed:", error);
+          }
           // Fallback to original image
           identifyPlant(imageData);
         }
@@ -109,7 +119,25 @@ const Scanner = () => {
     }
   };
 
+  // Sanitize AI prediction labels to prevent wildcard injection
+  const sanitizeLabel = (label: string): string => {
+    // Remove SQL wildcards and special chars, keep only alphanumeric, spaces, and hyphens
+    return label.replace(/[%_\\]/g, '').trim();
+  };
+
   const identifyPlant = async (imageData: string) => {
+    // Rate limiting check
+    const now = Date.now();
+    if (now - lastScanTime < SCAN_COOLDOWN_MS) {
+      toast({
+        title: "Please wait",
+        description: "Scanner cooling down. Try again in a moment.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setLastScanTime(now);
+    
     setIsScanning(true);
     setResults([]);
     
@@ -124,13 +152,25 @@ const Scanner = () => {
       // Run classification
       const predictions = await classifier(imageData, { top_k: 5 });
       
-      console.log("Predictions:", predictions);
+      if (import.meta.env.DEV) {
+        console.log("Predictions:", predictions);
+      }
       
-      // Extract plant-related keywords from predictions
+      // Extract and sanitize plant-related keywords from predictions
       const predArray = Array.isArray(predictions) ? predictions : [predictions];
-      const plantKeywords = predArray
-        .map((pred: any) => pred.label.toLowerCase())
-        .join(' ');
+      const MAX_KEYWORD_LENGTH = 100;
+      const sanitizedKeywords = predArray
+        .map((pred: any) => sanitizeLabel(pred.label.toLowerCase()))
+        .filter(label => label.length > 0 && label.length <= MAX_KEYWORD_LENGTH)
+        .slice(0, 5); // Limit to 5 keywords max
+      
+      const plantKeywords = sanitizedKeywords.join(' ');
+      
+      // Validate pattern to prevent malicious queries
+      const PLANT_KEYWORD_PATTERN = /^[a-z0-9\s-]+$/;
+      if (!PLANT_KEYWORD_PATTERN.test(plantKeywords)) {
+        throw new Error('Invalid search pattern detected');
+      }
 
       // Search our database for matching plants
       const { data: plants, error } = await supabase
@@ -167,7 +207,9 @@ const Scanner = () => {
         });
       }
     } catch (error) {
-      console.error("Identification error:", error);
+      if (import.meta.env.DEV) {
+        console.error("Identification error:", error);
+      }
       toast({
         title: "Identification Failed",
         description: "Could not identify the plant. Please try again.",
