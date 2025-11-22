@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Navbar } from "@/components/Navbar";
 import { Search, BookOpen, Globe, Leaf } from "lucide-react";
+import { DiseaseSuggestion } from "@/components/DiseaseSuggestion";
 import heroBanner from "@/assets/hero-banner.jpg";
 const Home = () => {
   return <div className="min-h-screen bg-background">
@@ -32,6 +33,13 @@ const Home = () => {
               </Button>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* AI Suggestion Section */}
+      <section className="py-20 bg-background">
+        <div className="container px-4">
+          <DiseaseSuggestion />
         </div>
       </section>
 
